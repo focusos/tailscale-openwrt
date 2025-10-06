@@ -19,6 +19,8 @@
 
 ## 请注意
 
+## 2025年10月6日11:24:23，本人fork大佬项目，继续进行维护。
+
 ***🚨🚨🚨由于本仓库不再维护 [![deprecated](https://img.shields.io/badge/状态-不再维护-red)](https://github.com/CH3NGYZ/small-tailscale-openwrt) , 您可以选择我维护的另一个同功能[仓库](https://github.com/CH3NGYZ/small-tailscale-openwrt)🚨🚨🚨***
 
 - 该仓库通过 UPX 对可执行文件进行压缩，最终体积约为 6-7MB，可直接在路由器设备中安装(某些架构无法压缩, 可执行文件大小约为20MB)。
