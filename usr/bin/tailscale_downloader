@@ -12,7 +12,7 @@ EOF
 if [ ! -f /tmp/tailscale ]; then
     arch=$(uname -m)
     case "$arch" in
-        i386)
+        i386 | i686)
             arch=386
             ;;
         x86_64)
@@ -37,6 +37,8 @@ if [ ! -f /tmp/tailscale ]; then
         *)
             echo "DOWNLOAD: ----------------------------------------------------"
             echo "当前机器的架构是${arch}${endianness}, 脚本不兼容此架构"
+            echo "请给作者提issue以便作者及时修改脚本:"
+            echo "https://github.com/focusos/tailscale-openwrt/issues"
             echo "--------------------------------------------------------------"
             exit 1
             ;;
@@ -44,14 +46,15 @@ if [ ! -f /tmp/tailscale ]; then
 
     latest_version="not_available"
     version_timeout=10
-    version_url="CH3NGYZ/tailscale-openwrt/releases/latest"
+    version_url="focusos/tailscale-openwrt/releases/latest"
     version_proxys="https://ghfast.top/https://github.com
-                    https://cf.ghproxy.cc/https://github.com
+                    https://gh.api.99988866.xyz/https://github.com
+                    https://www.ghproxy.cn/https://github.com
                     https://www.ghproxy.cc/https://github.com
                     https://gh-proxy.com/https://github.com
                     https://ghproxy.cc/https://github.com
+                    https://cf.ghproxy.cc/https://github.com
                     https://ghproxy.cn/https://github.com
-                    https://www.ghproxy.cn/https://github.com
                     https://github.com"
 
     range="1 2 3"
@@ -61,7 +64,6 @@ if [ ! -f /tmp/tailscale ]; then
         for version_proxy in $version_proxys; do
             version_proxy_url="$version_proxy/$version_url"
             get_version=$(timeout $version_timeout wget -c -qO- "$version_proxy_url" | grep 已从上游同步 | head -1 | cut -d'%' -f 2)
-
             if [ -n "$get_version" ]; then
                 echo "DOWNLOAD: -----------------------------------"
                 echo "通过 $version_proxy 获取版本号：$get_version"
@@ -72,22 +74,20 @@ if [ ! -f /tmp/tailscale ]; then
                 echo "DOWNLOAD: ----------------------------------------------------"
                 echo "通过 $version_proxy 获取版本号为空，尝试下一个链接..."
                 echo "--------------------------------------------------------------"
-                # 移除无效代理地址
-                version_proxys=$(echo "$version_proxys" | sed "s|$version_proxy||")
             fi
         done
     done
 
     # 如果最终还是无法获取到最新版本号，使用默认版本号
     if [ "$latest_version" = "not_available" ]; then
-        latest_version="1.70.0"
+        latest_version="1.78.1"
         echo "DOWNLOAD: --------------------------------"
         echo "获取版本号失败，使用内置版本号：$latest_version"
         echo "------------------------------------------"
     fi
 
     version="${latest_version}_${arch}"
-    zip_url="CH3NGYZ/tailscale-openwrt/releases/download/${latest_version}/tailscale_${version}.tgz"
+    zip_url="focusos/tailscale-openwrt/releases/download/${latest_version}/tailscale_${version}.tgz"
 
     echo -e "tailscale_${version}/tailscale" > /tmp/tailscale_${version}_files.txt
     echo -e "tailscale_${version}/tailscaled" >> /tmp/tailscale_${version}_files.txt
