@@ -80,7 +80,7 @@ if [ ! -f /tmp/tailscale ]; then
 
     # 如果最终还是无法获取到最新版本号，使用默认版本号
     if [ "$latest_version" = "not_available" ]; then
-        latest_version="1.78.1"
+        latest_version="1.88.3"
         echo "DOWNLOAD: --------------------------------"
         echo "获取版本号失败，使用内置版本号：$latest_version"
         echo "------------------------------------------"
