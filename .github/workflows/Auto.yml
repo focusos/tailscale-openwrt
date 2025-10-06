@@ -15,8 +15,8 @@ jobs:
       - name: Check Repository Owner
         id: check_owner
         run: |
-          if [ "${{ github.repository_owner }}" != "CH3NGYZ" ]; then
-            echo "Repository owner is not CH3NGYZ. Cancelling the job."
+          if [ "${{ github.repository_owner }}" != "focusos" ]; then
+            echo "Repository owner is not focusos. Cancelling the job."
             exit 1
           fi
 
