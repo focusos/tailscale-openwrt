@@ -1,16 +1,18 @@
 #!/bin/sh
+
 set -e
 
-# 配置DNS
+# 1.配置DNS
 cat <<EOF > /etc/resolv.conf
 search lan
 nameserver 223.5.5.5
 nameserver 119.29.29.29
 EOF
 
-# 检查并设置架构
+# 2.检查并设置架构
 if [ ! -f /tmp/tailscale ]; then
     arch=$(uname -m)
+	endianness=""
     case "$arch" in
         i386 | i686)
             arch=386
@@ -59,7 +61,7 @@ if [ ! -f /tmp/tailscale ]; then
 
     range="1 2 3"
 
-    # 尝试获取最新版本号
+    # 3.尝试获取最新版本号
     for attempt in $range; do
         for version_proxy in $version_proxys; do
             version_proxy_url="$version_proxy/$version_url"
