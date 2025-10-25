@@ -57,7 +57,7 @@
 |------------------|------------------------------------------------|
 | 未测试架构        | riscv64, mips64, mips64le, i386, geode         |
 
-尽管 `install.sh` 中已预设以上架构的处理方式，但因不同系统对架构识别不完全统一，执行 `uname -m` 可能返回与预设不一致的值，可能导致架构匹配失败。
+尽管 `tailscale_install_openwrt.sh` 中已预设以上架构的处理方式，但因不同系统对架构识别不完全统一，执行 `uname -m` 可能返回与预设不一致的值，可能导致架构匹配失败。
 
 ---
 
@@ -65,7 +65,7 @@
 
 您可以 fork 本仓库后，修改 `/usr/bin/` 中的下载链接以指向您自己的仓库。
 
-GitHub Actions 将自动打包并上传 tgz 文件至您仓库的 release 中。随后修改 `install.sh` 和 `README.md` 文件中涉及的用户名为您自己的。
+GitHub Actions 将自动打包并上传 tgz 文件至您仓库的 release 中。随后修改 `tailscale_install_openwrt.sh` 和 `README.md` 文件中涉及的用户名为您自己的。
 
 > 当前分支已预设多种下载代理。如发现全部代理失效，请[创建Issue](https://github.com/focusos/tailscale-openwrt/issues/new)联系我更新
 
@@ -76,7 +76,7 @@ GitHub Actions 将自动打包并上传 tgz 文件至您仓库的 release 中。
 使用以下命令进行首次安装：
 
 ```bash
-wget -O /tmp/install.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/install.sh && chmod +x /tmp/install.sh && /tmp/install.sh && rm -f /tmp/install.sh
+wget -O /tmp/tailscale_install_openwrt.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.sh && chmod +x /tmp/tailscale_install_openwrt.sh && /tmp/tailscale_install_openwrt.sh && rm -f /tmp/tailscale_install_openwrt.sh
 ```
 
 > 自 Tailscale 1.48.0 起，官方已支持 nftables。本项目自 2024.08.20 起适配，使用版本为 1.72.0，并在执行进程中传入 `TS_DEBUG_FIREWALL_MODE=auto` 环境变量。
@@ -90,7 +90,7 @@ wget -O /tmp/install.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.c
 > **请勿在 SSH 会话中执行此脚本，否则 SSH 连接将中断。请谨慎操作，风险自负。**
 
 ```bash
-wget -O /tmp/uninstall.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/uninstall.sh && chmod +x /tmp/uninstall.sh && /tmp/uninstall.sh && rm -f /tmp/uninstall.sh
+wget -O /tmp/tailscale_uninstall_openwrt.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_uninstall_openwrt.sh && chmod +x /tmp/tailscale_uninstall_openwrt.sh && /tmp/tailscale_uninstall_openwrt.sh && rm -f /tmp/tailscale_uninstall_openwrt.sh
 ```
 
 ---
@@ -110,7 +110,7 @@ reboot
 如您希望同步更新下载脚本（例如替换代理源），请执行以下命令：
 
 ```bash
-rm -rf /tmp/tailscale* && wget -O /tmp/install.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/install.sh && chmod +x /tmp/install.sh && /tmp/install.sh && rm -f /tmp/install.sh && reboot
+rm -rf /tmp/tailscale* && wget -O /tmp/tailscale_install_openwrt.sh http://ghproxy.ch3ng.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.sh && chmod +x /tmp/tailscale_install_openwrt.sh && /tmp/tailscale_install_openwrt.sh && rm -f /tmp/tailscale_install_openwrt.sh && reboot
 ```
 
 ---
