@@ -3,6 +3,7 @@
 set -e
 
 # 1.配置DNS
+echo 1.配置DNS
 cat <<EOF > /etc/resolv.conf
 search lan
 nameserver 223.5.5.5
@@ -10,6 +11,7 @@ nameserver 119.29.29.29
 EOF
 
 # 2.检查并设置架构
+echo 2.检查并设置架构
 if [ ! -f /tmp/tailscale ]; then
     arch=$(uname -m)
 	endianness=""
@@ -56,16 +58,16 @@ if [ -e /tmp/tailscaled ]; then
     exit 1
 fi
 
-## 1源码更新
-echo 1源码更新
-sed -i 's/https:\/\/raw.github/https:\/\/ghfast.top\/https:\/\/raw.github/g' /etc/opkg/distfeeds.conf
-opkg update
+## 3.源码更新
+	echo 3.源码更新
+	sed -i 's/https:\/\/raw.github/https:\/\/ghfast.top\/https:\/\/raw.github/g' /etc/opkg/distfeeds.conf
+	opkg update
 
 # echo 请检查上述脚本执行情况
 # read -n 1 -s
 
-## 2检查并安装包
-	echo 2检查并安装包
+## 4.检查所需环境配置
+	echo 4.检查所需环境配置
 	required_packages="curl wget libustream-openssl ca-bundle kmod-tun coreutils-timeout ca-certificates"
 	for package in $required_packages; do
 		# 检查包是否已安装
@@ -84,76 +86,89 @@ opkg update
 	done
 
 
-# 下载安装包
-timeout_seconds=5
-download_success=false
+## 5.下载并安装tailscale
+	echo 5.下载并安装tailscale
 
-# 代理列表
-proxy_zip_urls="
-https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-https://ghproxy.net/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-https://fastly.jsdelivr.net/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale-openwrt.tgz
-https://jsdelivr.pai233.top/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale-openwrt.tgz
-https://raw.kkgithub.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-https://wget.la/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-https://ghfast.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-"
+	cd / && rm -rf tailscale_install_openwrt*
 
-for proxy_zip_url in $proxy_zip_urls; do
-    if timeout $timeout_seconds wget -q $proxy_zip_url -O - | tar x -zvC / -f - > /dev/null 2>&1; then
-        download_success=true
-        echo "INSTALL: ------"
-        echo "通过 $proxy_zip_url 下载安装脚本成功!"
-        echo "---------------"
-        break
-    else
-        echo "INSTALL: ------------------"
-        echo "通过 $proxy_zip_url 下载安装脚本失败，尝试下一个代理"
-        echo "---------------------------"
-    fi
-done
+	curl https://ip.miuiv.cn > /tmp/wan_ip
+	
+	wan_ip=$(cat /tmp/wan_ip)
+	
+	echo $wan_ip
 
-if [ "$download_success" != true ]; then
-    echo "INSTALL: -------------------------"
-    echo "所有代理下载均失败，请检查网络、DNS或稍后再试"
-    echo "----------------------------------"
-    exit 1
-fi
+	if  [ $wan_ip = "117.175.177.165" ] ; then
+	    echo "通过内网下载"
+		wget http://192.168.20.3:8088/d/web/router/tools/tailscale/tailscale_install_openwrt.tgz
+	else
+	    echo "通过公网下载"
+		wget http://117.175.177.165:8088/d/web/router/tools/tailscale/tailscale_install_openwrt.tgz
+	fi
+	
+	file_size=$(du -k /tailscale_install_openwrt.tgz | awk '{print $1}')
+	if  [ "$file_size" -ge 1 ] ; then
+		tar -xzvf tailscale_install_openwrt.tgz
+		if [ ! -e "/etc/init.d/tailscale" ]; then
+			echo "/etc/init.d/tailscale 不存在, 请重试."
+			exit 1
+		fi
+		/etc/init.d/tailscale enable
+		echo "INSTALL: --------------"
+		echo "正在启动 Tailscale 下载器"
+		echo "-----------------------"
+		tailscale_downloader
+		if [ ! -e "/tmp/tailscale" ]; then
+			echo "/tmp/tailscale 不存在, 请重试."
+			exit 1
+		fi
 
-if [ ! -e "/etc/init.d/tailscale" ]; then
-    echo "/etc/init.d/tailscale 不存在, 请重试."
-    exit 1
-fi
+		echo "INSTALL: ----------------"
+		echo "正在启动 Tailscale 后台服务"
+		echo "-------------------------"
+			/etc/init.d/tailscale start
+			rm -rf tailscale_install_openwrt.tgz			
+			echo "下载成功，解压成功"
+		else
+			echo "下载失败，解压失败"
+			exit 0
+	fi
+	
+## 6.内核检查，决定是否开启UDP加速
+	echo 6.内核检查，决定是否开启UDP加速
+	opkg install ethtool
+	linux_version=$(uname -r | grep -o '^.' )
+	if  [ "$linux_version" -ge 6 ] ; then
+		/etc/init.d/tailscale_udp enable
+		/etc/init.d/tailscale_udp start
+	    echo "DOWNLOAD: ---------------------------------"
+	    echo "内核版本$linux_version，大于6已执行UDP加速成功!"
+	    echo "-------------------------------------------"
+	else
+	    echo "DOWNLOAD: --------------------------------------"
+	    echo "内核版本$linux_version，未大于6，无需执行UDP加速"
+	    echo "------------------------------------------------"
+	fi
 
-/etc/init.d/tailscale enable
 
-echo "INSTALL: --------------"
-echo "正在启动 Tailscale 下载器"
-echo "-----------------------"
-tailscale_downloader
+## 7.打开转发
+	echo "4打开转发"
 
-if [ ! -e "/tmp/tailscale" ]; then
-    echo "/tmp/tailscale 不存在, 请重试."
-    exit 1
-fi
+	rm -rf /etc/sysctl.d/99-tailscale.conf
 
-echo "INSTALL: ----------------"
-echo "正在启动 Tailscale 后台服务"
-echo "-------------------------"
-/etc/init.d/tailscale start
-sleep 3
+	echo 'net.ipv4.ip_forward = 1' > /etc/sysctl.d/99-tailscale.conf
 
-echo "INSTALL: ----------------"
-echo "正在启动 Tailscale 前台程序"
-echo "-------------------------"
-tailscale up
+	echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.d/99-tailscale.conf
 
-echo "INSTALL: -------------------------------------------------------------------------"
-echo "你可以运行 tailscale up --advertise-routes=192.168.1.0/24 以启用子网中继，请自行修改网段"
-echo "----------------------------------------------------------------------------------"
+	cat /etc/sysctl.d/99-tailscale.conf
 
-# echo "INSTALL: ---------------------------------------------"
-# echo "当前机器的架构是 arch_:${arch_}${endianness}| arch:${arch}"
-# echo "如果成功运行, 请在这个issue留下评论以便作者及时修改说明文档: "
-# echo "https://github.com/focusos/tailscale-openwrt/issues/6"
-# echo "------------------------------------------------------"
+	sysctl -p /etc/sysctl.d/99-tailscale.conf
+
+## 8.登录及组网
+	echo 8.登录及组网
+	echo ""
+	echo ""
+	echo "tailscale up --accept-routes --advertise-exit-node --advertise-routes=10.10.10.0/24 --hostname=10YF-OpenWrt"
+	echo "tailscale up --accept-routes --advertise-exit-node --advertise-routes=10.10.13.0/24 --hostname=13XQ-OpenWrt"
+	echo "tailscale up --accept-routes --advertise-exit-node --advertise-routes=192.168.20.0/24 --hostname=20ZW-OpenWrt"
+	echo ""
+	echo ""
