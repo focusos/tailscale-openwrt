@@ -21,7 +21,7 @@
 
 ## 2025年10月6日11:24:23，本人fork大佬项目，继续进行维护。
 
-***🚨🚨🚨由于本仓库不再维护 [![deprecated](https://img.shields.io/badge/状态-不再维护-red)](https://github.com/focusos/small-tailscale-openwrt) , 您可以选择我维护的另一个同功能[仓库](https://github.com/focusos/small-tailscale-openwrt)🚨🚨🚨***
+***🚨🚨🚨由于本仓库不再维护 [![deprecated](https://img.shields.io/badge/状态-不再维护-red)](https://github.com/CH3NGYZ/small-tailscale-openwrt) , 您可以选择我维护的另一个同功能[仓库](https://github.com/CH3NGYZ/small-tailscale-openwrt)🚨🚨🚨***
 
 - 该仓库通过 UPX 对可执行文件进行压缩，最终体积约为 6-7MB，可直接在路由器设备中安装(某些架构无法压缩, 可执行文件大小约为20MB)。
 - 支持内存闪存双安装模式
@@ -37,15 +37,15 @@
 ## 项目初衷
 
 本项目最初旨在支持那些“存储空间有限、但内存相对充足”的 OpenWRT 路由器设备。核心思路是将 Tailscale 下载至 `/tmp`（内存）中运行
-- ***(注:上面提到的[仓库](https://github.com/focusos/ts-test)已经可以支持内存闪存双模式安装, 且可执行文件更小)。***
+- ***(注:上面提到的[仓库](https://github.com/CH3NGYZ/ts-test)已经可以支持内存闪存双模式安装, 且可执行文件更小)。***
 
 ---
 
 ## 适用范围
 | 内存/存储        | < 80MB 存储空间       | > 80MB 存储空间       |
 |------------------|------------------------|------------------------|
-| < 80MB 内存       | 不支持                | 不推荐使用。建议[手动安装](https://github.com/focusos/tailscale-openwrt/issues/18#issuecomment-2336612695)至内置存储 |
-| > 80MB 内存       | 支持运行              | 支持运行。建议[手动安装](https://github.com/focusos/tailscale-openwrt/issues/18#issuecomment-2336612695)以确保稳定性 |
+| < 80MB 内存       | 不支持                | 不推荐使用。建议[手动安装](https://github.com/CH3NGYZ/tailscale-openwrt/issues/18#issuecomment-2336612695)至内置存储 |
+| > 80MB 内存       | 支持运行              | 支持运行。建议[手动安装](https://github.com/CH3NGYZ/tailscale-openwrt/issues/18#issuecomment-2336612695)以确保稳定性 |
 
 > 注意：压缩包（zip）及解压后的二进制文件整体大小约为 80MB。
 
