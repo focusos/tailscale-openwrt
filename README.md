@@ -1,4 +1,4 @@
-# Tailscale on OpenWRT
+# Tailscale Install OpenWRT
 [![Release](https://img.shields.io/github/release/focusos/tailscale-openwrt)](https://github.com/focusos/tailscale-openwrt/releases)
 [![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Ffocusos%2Ftailscale-openwrt&label=views&countColor=%23263759&style=flat)](https://github.com/focusos/tailscale-openwrt)
 ---
