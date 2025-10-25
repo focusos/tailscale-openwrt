@@ -126,7 +126,7 @@ fi
 		echo "正在启动 Tailscale 后台服务"
 		echo "-------------------------"
 			/etc/init.d/tailscale start
-			rm -rf tailscale_install_openwrt.tgz			
+			rm -rf /tailscale_install_openwrt.tgz			
 			echo "下载成功，解压成功"
 		else
 			echo "下载失败，解压失败"
