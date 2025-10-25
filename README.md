@@ -50,6 +50,19 @@
 > 注意：压缩包（zip）及解压后的二进制文件整体大小约为 80MB。
 
 ---
+## 手动安装固定版本
+```
+手动安装固化版本:
+
+1.在 releases 下载对应架构和版本的zip文件并解压到电脑
+2.不管用什么方法, 将 tailscale 和 tailscaled 复制到路由器 /usr/bin/ 路径内
+3.增加两个文件的可执行权限 chmod +x /usr/bin/tailscale 和 chmod +x /usr/bin/tailscaled
+4.将本仓库 /etc/init.d/tailscale 文件复制到路由器 /etc/init.d/ 路径内
+5./etc/init.d/tailscale enable
+6./etc/init.d/tailscale start
+稍等10秒
+7.tailscale up
+```
 
 ## 支持架构
 
