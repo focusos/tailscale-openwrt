@@ -1,38 +1,51 @@
 #!/bin/sh
-arch_=$(uname -m)
-endianness=""
 
-case "$arch_" in
-    i386)
-        arch=386
-        ;;
-    x86_64)
-        arch=amd64
-        ;;
-    armv7l)
-        arch=arm
-        ;;
-    aarch64 | armv8l)
-        arch=arm64
-        ;;
-    geode)
-        arch=geode
-        ;;
-    mips)
-        arch=mips
-        endianness=$(echo -n I | hexdump -o | awk '{ print (substr($2,6,1)=="1") ? "le" : "be"; exit }')
-        ;;
-    riscv64)
-        arch=riscv64
-        ;;
-    *)
-        echo "INSTALL: --------------------------------------------"
-        echo "当前机器的架构是 [${arch_}${endianness}]"
-        echo "脚本不支持您的机器"
-        echo "------------------------------------------------------"
-        exit 1
-        ;;
-esac
+set -e
+
+# 1.配置DNS
+cat <<EOF > /etc/resolv.conf
+search lan
+nameserver 223.5.5.5
+nameserver 119.29.29.29
+EOF
+
+# 2.检查并设置架构
+if [ ! -f /tmp/tailscale ]; then
+    arch=$(uname -m)
+	endianness=""
+    case "$arch" in
+        i386 | i686)
+            arch=386
+            ;;
+        x86_64)
+            arch=amd64
+            ;;
+        armv7l)
+            arch=arm
+            ;;
+        aarch64 | armv8l)
+            arch=arm64
+            ;;
+        geode)
+            arch=geode
+            ;;
+        mips)
+            endianness=$(echo -n I | hexdump -o | awk '{ print (substr($2,6,1)=="1") ? "le" : "be"; exit }')
+            arch="mips$endianness"
+            ;;
+        riscv64)
+            arch=riscv64
+            ;;
+        *)
+            echo "DOWNLOAD: ----------------------------------------------------"
+            echo "当前机器的架构是${arch}${endianness}, 脚本不兼容此架构"
+            echo "请给作者提issue以便作者及时修改脚本:"
+            echo "https://github.com/focusos/tailscale-openwrt/issues"
+            echo "--------------------------------------------------------------"
+            exit 1
+            ;;
+    esac
+fi
 
 if [ -e /tmp/tailscaled ]; then
     echo "INSTALL: ------------------"
@@ -43,25 +56,32 @@ if [ -e /tmp/tailscaled ]; then
     exit 1
 fi
 
-opkg update
+## 1源码更新
+	echo 1源码更新
+	# sed 's/https:\/\/raw.githubusercontent.com/https:\/\/ghfast.top\/https:\/\/raw.githubusercontent.com/' /etc/opkg/distfeeds.conf
+	opkg update
 
-# 检查并安装包
-required_packages="libustream-openssl ca-bundle kmod-tun coreutils-timeout"
-for package in $required_packages; do
-    # 检查包是否已安装
-    if ! opkg list-installed | grep -q "$package"; then
-        echo "INSTALL: 包 $package 未安装，开始安装..."
-        opkg install "$package"
-        if [ $? -ne 0 ]; then
-            echo "INSTALL: 安装 $package 失败，跳过该包，如果无法正常运行 tailscale，请排查是否需要手动安装该包"
-            continue
-        else
-            echo "INSTALL: 包 $package 安装成功"
-        fi
-    else
-        echo "INSTALL: 包 $package 已安装，跳过"
-    fi
-done
+# echo 请检查上述脚本执行情况
+# read -n 1 -s
+
+## 2检查并安装包
+	echo 2检查并安装包
+	required_packages="curl wget libustream-openssl ca-bundle kmod-tun coreutils-timeout ca-certificates"
+	for package in $required_packages; do
+		# 检查包是否已安装
+		if ! opkg list-installed | grep -q "$package"; then
+	echo "INSTALL: 包 $package 未安装，开始安装..."
+	opkg install "$package"
+	if [ $? -ne 0 ]; then
+	echo "INSTALL: 安装 $package 失败，跳过该包，如果无法正常运行 tailscale，请排查是否需要手动安装该包"
+	continue
+	else
+	echo "INSTALL: 包 $package 安装成功"
+	fi
+		else
+	echo "INSTALL: 包 $package 已安装，跳过"
+		fi
+	done
 
 
 # 下载安装包
