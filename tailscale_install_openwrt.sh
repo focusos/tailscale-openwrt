@@ -4,11 +4,11 @@ set -e
 
 # 1.配置DNS
 echo 1.配置DNS
-cat <<EOF > /etc/resolv.conf
-search lan
-nameserver 223.5.5.5
-nameserver 119.29.29.29
-EOF
+#cat <<EOF > /etc/resolv.conf
+#search lan
+#nameserver 223.5.5.5
+#nameserver 119.29.29.29
+#EOF
 
 # 2.检查并设置架构
 echo 2.检查并设置架构
@@ -60,7 +60,7 @@ fi
 
 ## 3.源码更新
 	echo 3.源码更新
-	sed -i 's/https:\/\/raw.github/https:\/\/ghfast.top\/https:\/\/raw.github/g' /etc/opkg/distfeeds.conf
+	sed -i 's/openwrt_core https:\/\/raw.githubusercontent/openwrt_core https:\/\/ghfast.top\/https:\/\/raw.githubusercontent/g' /etc/opkg/distfeeds.conf
 	opkg update
 
 # echo 请检查上述脚本执行情况
