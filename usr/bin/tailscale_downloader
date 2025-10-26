@@ -8,6 +8,7 @@ set -e
 #nameserver 223.5.5.5
 #nameserver 119.29.29.29
 #EOF
+##
 
 # 2.检查并设置架构
 	if [ ! -f /tmp/tailscale ]; then
