@@ -4,11 +4,11 @@ set -e
 
 # 1.配置DNS
 echo 1.配置DNS
-cat <<EOF > /etc/resolv.conf
-search lan
-nameserver 223.5.5.5
-nameserver 119.29.29.29
-EOF
+#cat <<EOF > /etc/resolv.conf
+#search lan
+#nameserver 223.5.5.5
+#nameserver 119.29.29.29
+#EOF
 
 # 2.检查并设置架构
 echo 2.检查并设置架构
@@ -60,7 +60,7 @@ fi
 
 ## 3.源码更新
 	echo 3.源码更新
-	sed -i 's/https:\/\/raw.github/https:\/\/ghfast.top\/https:\/\/raw.github/g' /etc/opkg/distfeeds.conf
+	sed -i 's/openwrt_core https:\/\/raw.githubusercontent/openwrt_core https:\/\/ghfast.top\/https:\/\/raw.githubusercontent/g' /etc/opkg/distfeeds.conf
 	opkg update
 
 # echo 请检查上述脚本执行情况
@@ -94,13 +94,13 @@ fi
 
 		# 代理列表
 		proxy_zip_urls="
-		https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-		https://ghproxy.net/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-		https://fastly.jsdelivr.net/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale-openwrt.tgz
-		https://jsdelivr.pai233.top/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale-openwrt.tgz
-		https://raw.kkgithub.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-		https://wget.la/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
-		https://ghfast.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale-openwrt.tgz
+		https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.tgz
+		https://ghproxy.net/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.tgz
+		https://fastly.jsdelivr.net/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale_install_openwrt.tgz
+		https://jsdelivr.pai233.top/gh/focusos/tailscale-openwrt@chinese_mainland/tailscale_install_openwrt.tgz
+		https://raw.kkgithub.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.tgz
+		https://wget.la/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.tgz
+		https://ghfast.top/https://raw.githubusercontent.com/focusos/tailscale-openwrt/chinese_mainland/tailscale_install_openwrt.tgz
 		"
 
 		for proxy_zip_url in $proxy_zip_urls; do
@@ -125,6 +125,7 @@ fi
 		fi
 	file_size=$(du -k /tailscale_install_openwrt.tgz | awk '{print $1}')
 	if  [ "$file_size" -ge 1 ] ; then
+		tar -xzvf tailscale_install_openwrt.tgz
 		if [ ! -e "/etc/init.d/tailscale" ]; then
 			echo "/etc/init.d/tailscale 不存在, 请重试."
 			exit 1
